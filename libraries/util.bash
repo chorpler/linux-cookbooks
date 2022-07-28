@@ -1,11 +1,10 @@
-#!/bin/bash -e
+#!/usr/local/bin/bash
 
 ###################
 # ARRAY UTILITIES #
 ###################
 
-function arrayToParameters()
-{
+function arrayToParameters() {
     local -r array=("${@}")
 
     local -r string="$(printf "'%s' " "${array[@]}")"
@@ -13,15 +12,13 @@ function arrayToParameters()
     echo "${string:0:${#string} - 1}"
 }
 
-function arrayToString()
-{
+function arrayToString() {
     local -r array=("${@}")
 
     arrayToStringWithDelimiter ',' "${array[@]}"
 }
 
-function arrayToStringWithDelimiter()
-{
+function arrayToStringWithDelimiter() {
     local -r delimiter="${1}"
     local -r list=("${@:2}")
 
@@ -30,8 +27,7 @@ function arrayToStringWithDelimiter()
     echo "${string:0:${#string} - ${#delimiter}}"
 }
 
-function excludeElementFromArray()
-{
+function excludeElementFromArray() {
     local -r element="${1}"
     local array=("${@:2}")
 
@@ -48,8 +44,7 @@ function excludeElementFromArray()
     echo "${array[@]}"
 }
 
-function isElementInArray()
-{
+function isElementInArray() {
     local -r element="${1}"
     local -r array=("${@:2}")
 
@@ -63,8 +58,7 @@ function isElementInArray()
     echo 'false' && return 1
 }
 
-function sortUniqArray()
-{
+function sortUniqArray() {
     local -r array=("${@}")
 
     trimString "$(tr ' ' '\n' <<< "${array[@]}" | sort -u | tr '\n' ' ')"
@@ -74,8 +68,7 @@ function sortUniqArray()
 # COMPILE UTILITIES #
 #####################
 
-function compileAndInstallFromSource()
-{
+function compileAndInstallFromSource() {
     local -r downloadURL="${1}"
     local -r installFolderPath="${2}"
     local -r installFileOrFolderBinPath="${3}"
@@ -101,8 +94,7 @@ function compileAndInstallFromSource()
 # DATE TIME UTILITIES #
 #######################
 
-function convertISO8601ToSeconds()
-{
+function convertISO8601ToSeconds() {
     local -r time="${1}"
 
     if [[ "$(isMacOperatingSystem)" = 'true' ]]
@@ -116,18 +108,15 @@ function convertISO8601ToSeconds()
     fi
 }
 
-function getISO8601DateTimeNow()
-{
+function getISO8601DateTimeNow() {
     date -u +'%Y-%m-%dT%H:%M:%SZ'
 }
 
-function getUTCNowInSeconds()
-{
+function getUTCNowInSeconds() {
     date -u +'%s'
 }
 
-function secondsToReadableTime()
-{
+function secondsToReadableTime() {
     local -r time="${1}"
 
     local -r day="$((time / 60 / 60 / 24))"
@@ -150,8 +139,7 @@ function secondsToReadableTime()
 # FILE LOCAL UTILITIES #
 ########################
 
-function appendToFileIfNotFound()
-{
+function appendToFileIfNotFound() {
     local -r file="${1}"
     local -r pattern="${2}"
     local -r string="${3}"
@@ -197,8 +185,7 @@ function appendToFileIfNotFound()
     fi
 }
 
-function checkExistFile()
-{
+function checkExistFile() {
     local -r file="${1}"
     local -r errorMessage="${2}"
 
@@ -213,8 +200,7 @@ function checkExistFile()
     fi
 }
 
-function checkExistFolder()
-{
+function checkExistFolder() {
     local -r folder="${1}"
     local -r errorMessage="${2}"
 
@@ -229,8 +215,7 @@ function checkExistFolder()
     fi
 }
 
-function checkValidJSONContent()
-{
+function checkValidJSONContent() {
     local -r content="${1}"
 
     if [[ "$(isValidJSONContent "${content}")" = 'false' ]]
@@ -239,8 +224,7 @@ function checkValidJSONContent()
     fi
 }
 
-function checkValidJSONFile()
-{
+function checkValidJSONFile() {
     local -r file="${1}"
 
     if [[ "$(isValidJSONFile "${file}")" = 'false' ]]
@@ -249,8 +233,7 @@ function checkValidJSONFile()
     fi
 }
 
-function cleanUpSystemFolders()
-{
+function cleanUpSystemFolders() {
     header 'CLEANING UP SYSTEM FOLDERS'
 
     local -r folders=(
@@ -267,8 +250,7 @@ function cleanUpSystemFolders()
     done
 }
 
-function copyFolderContent()
-{
+function copyFolderContent() {
     local -r sourceFolder="${1}"
     local -r destinationFolder="${2}"
 
@@ -281,8 +263,7 @@ function copyFolderContent()
         -exec cp -p -r '{}' "${destinationFolder}" \;
 }
 
-function createAbsoluteUsrBin()
-{
+function createAbsoluteUsrBin() {
     local -r binFileName="${1}"
     local -r sourceFilePath="${2}"
 
@@ -293,8 +274,7 @@ function createAbsoluteUsrBin()
     chmod 755 "/usr/bin/${binFileName}"
 }
 
-function createFileFromTemplate()
-{
+function createFileFromTemplate() {
     local -r sourceFile="${1}"
     local -r destinationFile="${2}"
     local -r oldNewData=("${@:3}")
@@ -315,8 +295,7 @@ function createFileFromTemplate()
     echo "${content}" > "${destinationFile}"
 }
 
-function createInitFileFromTemplate()
-{
+function createInitFileFromTemplate() {
     local -r serviceName="${1}"
     local -r templateFolderPath="${2}"
     local -r initConfigDataFromTemplate=("${@:3}")
@@ -327,8 +306,7 @@ function createInitFileFromTemplate()
         "${initConfigDataFromTemplate[@]}"
 }
 
-function deleteOldLogs()
-{
+function deleteOldLogs() {
     local logFolderPaths=("${@}")
 
     header 'DELETING OLD LOGS'
@@ -368,8 +346,7 @@ function deleteOldLogs()
     done
 }
 
-function emptyFolder()
-{
+function emptyFolder() {
     local -r folder="${1}"
 
     checkExistFolder "${folder}"
@@ -379,8 +356,7 @@ function emptyFolder()
         -delete
 }
 
-function getFileExtension()
-{
+function getFileExtension() {
     local -r string="${1}"
 
     local -r fullFileName="$(basename "${string}")"
@@ -388,8 +364,7 @@ function getFileExtension()
     echo "${fullFileName##*.}"
 }
 
-function getFileName()
-{
+function getFileName() {
     local -r string="${1}"
 
     local -r fullFileName="$(basename "${string}")"
@@ -397,8 +372,7 @@ function getFileName()
     echo "${fullFileName%.*}"
 }
 
-function getTemporaryFile()
-{
+function getTemporaryFile() {
     local extension="${1}"
 
     if [[ "$(isEmptyString "${extension}")" = 'false' && "$(grep -i -o "^." <<< "${extension}")" != '.' ]]
@@ -409,13 +383,11 @@ function getTemporaryFile()
     mktemp "$(getTemporaryFolderRoot)/$(date +'%Y%m%d-%H%M%S')-XXXXXXXXXX${extension}"
 }
 
-function getTemporaryFolder()
-{
+function getTemporaryFolder() {
     mktemp -d "$(getTemporaryFolderRoot)/$(date +'%Y%m%d-%H%M%S')-XXXXXXXXXX"
 }
 
-function getTemporaryFolderRoot()
-{
+function getTemporaryFolderRoot() {
     local temporaryFolder='/tmp'
 
     if [[ "$(isEmptyString "${TMPDIR}")" = 'false' ]]
@@ -426,8 +398,7 @@ function getTemporaryFolderRoot()
     echo "${temporaryFolder}"
 }
 
-function initializeFolder()
-{
+function initializeFolder() {
     local -r folder="${1}"
 
     if [[ -d "${folder}" ]]
@@ -438,8 +409,7 @@ function initializeFolder()
     fi
 }
 
-function isEmptyFolder()
-{
+function isEmptyFolder() {
     local -r folderPath="${1}"
 
     checkExistFolder "${folderPath}"
@@ -452,8 +422,7 @@ function isEmptyFolder()
     echo 'false' && return 1
 }
 
-function isValidJSONContent()
-{
+function isValidJSONContent() {
     local -r content="${1}"
 
     if ( python -m 'json.tool' <<< "${content}" &> '/dev/null' || python3 -m 'json.tool' <<< "${content}" &> '/dev/null' )
@@ -464,8 +433,7 @@ function isValidJSONContent()
     echo 'false' && return 1
 }
 
-function isValidJSONFile()
-{
+function isValidJSONFile() {
     local -r file="${1}"
 
     checkExistFile "${file}"
@@ -473,8 +441,7 @@ function isValidJSONFile()
     isValidJSONContent "$(cat "${file}")"
 }
 
-function moveFolderContent()
-{
+function moveFolderContent() {
     local -r sourceFolder="${1}"
     local -r destinationFolder="${2}"
 
@@ -487,16 +454,14 @@ function moveFolderContent()
         -exec mv '{}' "${destinationFolder}" \;
 }
 
-function redirectOutputToLogFile()
-{
+function redirectOutputToLogFile() {
     local -r logFile="${1}"
 
     mkdir -p "$(dirname "${logFile}")"
     exec > >(tee -a "${logFile}") 2>&1
 }
 
-function resetFolderPermission()
-{
+function resetFolderPermission() {
     local -r folderPath="${1}"
     local -r userLogin="${2}"
     local -r groupName="${3}"
@@ -528,8 +493,7 @@ function resetFolderPermission()
         -print
 }
 
-function resetLogs()
-{
+function resetLogs() {
     local logFolderPaths=("${@}")
 
     # Default Log Folder Path
@@ -560,8 +524,7 @@ function resetLogs()
     done
 }
 
-function sortUniqueTrimFile()
-{
+function sortUniqueTrimFile() {
     local -r filePath="${1}"
 
     checkExistFile "${filePath}"
@@ -569,8 +532,7 @@ function sortUniqueTrimFile()
     printf '%s' "$(awk 'NF' "${filePath}" | awk '{$1=$1};1' | sort -u)" > "${filePath}"
 }
 
-function symlinkListUsrBin()
-{
+function symlinkListUsrBin() {
     local -r sourceFilePaths=("${@}")
 
     local sourceFilePath=''
@@ -583,8 +545,7 @@ function symlinkListUsrBin()
     done
 }
 
-function symlinkUsrBin()
-{
+function symlinkUsrBin() {
     local -r sourceBinFileOrFolder="${1}"
 
     if [[ "$(isMacOperatingSystem)" = 'true' ]]
@@ -639,8 +600,7 @@ function symlinkUsrBin()
     fi
 }
 
-function trimFile()
-{
+function trimFile() {
     local -r filePath="${1}"
 
     checkExistFile "${filePath}"
@@ -652,8 +612,7 @@ function trimFile()
 # FILE REMOTE UTILITIES #
 #########################
 
-function checkExistURL()
-{
+function checkExistURL() {
     local -r url="${1}"
 
     if [[ "$(existURL "${url}")" = 'false' ]]
@@ -662,8 +621,7 @@ function checkExistURL()
     fi
 }
 
-function downloadFile()
-{
+function downloadFile() {
     local -r url="${1}"
     local -r destinationFile="${2}"
     local overwrite="${3}"
@@ -700,8 +658,7 @@ function downloadFile()
     curl -L "${url}" -o "${destinationFile}" --retry 12 --retry-delay 5
 }
 
-function existURL()
-{
+function existURL() {
     local -r url="${1}"
 
     # Install Curl
@@ -719,16 +676,14 @@ function existURL()
     echo 'false' && return 1
 }
 
-function getRemoteFileContent()
-{
+function getRemoteFileContent() {
     local -r url="${1}"
 
     checkExistURL "${url}"
     curl -s -X 'GET' -L "${url}" --retry 12 --retry-delay 5
 }
 
-function unzipRemoteFile()
-{
+function unzipRemoteFile() {
     local -r downloadURL="${1}"
     local -r installFolder="${2}"
     local extension="${3}"
@@ -797,8 +752,7 @@ function unzipRemoteFile()
 # GIT UTILITIES #
 #################
 
-function checkValidGitToken()
-{
+function checkValidGitToken() {
     local -r user="${1}"
     local -r token="${2}"
     local -r gitURL="${3}"
@@ -809,8 +763,7 @@ function checkValidGitToken()
     fi
 }
 
-function getGitOrganizationMembers()
-{
+function getGitOrganizationMembers() {
     local -r user="${1}"
     local -r token="${2}"
     local -r orgName="${3}"
@@ -868,8 +821,7 @@ function getGitOrganizationMembers()
     done
 }
 
-function getGitOrganizationTeams()
-{
+function getGitOrganizationTeams() {
     local -r user="${1}"
     local -r token="${2}"
     local -r orgName="${3}"
@@ -928,8 +880,7 @@ function getGitOrganizationTeams()
     done
 }
 
-function getGitPrivateRepositorySSHURL()
-{
+function getGitPrivateRepositorySSHURL() {
     local -r user="${1}"
     local -r token="${2}"
     local -r orgName="${3}"
@@ -938,8 +889,7 @@ function getGitPrivateRepositorySSHURL()
     getGitUserRepositoryObjectKey "${user}" "${token}" 'ssh_url' 'private' "${orgName}" "${gitURL}"
 }
 
-function getGitPublicRepositorySSHURL()
-{
+function getGitPublicRepositorySSHURL() {
     local -r user="${1}"
     local -r token="${2}"
     local -r orgName="${3}"
@@ -948,8 +898,7 @@ function getGitPublicRepositorySSHURL()
     getGitUserRepositoryObjectKey "${user}" "${token}" 'ssh_url' 'public' "${orgName}" "${gitURL}"
 }
 
-function getGitRepositoryCollaborators()
-{
+function getGitRepositoryCollaborators() {
     local -r user="${1}"
     local -r token="${2}"
     local -r orgName="${3}"
@@ -1009,8 +958,7 @@ function getGitRepositoryCollaborators()
     done
 }
 
-function getGitRepositoryNameFromCloneURL()
-{
+function getGitRepositoryNameFromCloneURL() {
     local -r cloneURL="${1}"
 
     checkNonEmptyString "${cloneURL}" 'undefined clone url'
@@ -1023,8 +971,7 @@ function getGitRepositoryNameFromCloneURL()
     fi
 }
 
-function getGitTeamUsers()
-{
+function getGitTeamUsers() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1082,8 +1029,7 @@ function getGitTeamUsers()
     done
 }
 
-function getGitUserName()
-{
+function getGitUserName() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1115,8 +1061,7 @@ function getGitUserName()
         '.["name"] // empty'
 }
 
-function getGitUserPrimaryEmail()
-{
+function getGitUserPrimaryEmail() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1174,8 +1119,7 @@ function getGitUserPrimaryEmail()
     done
 }
 
-function getGitUserRepositoryObjectKey()
-{
+function getGitUserRepositoryObjectKey() {
     local -r user="${1}"
     local -r token="${2}"
     local -r objectKey="${3}"
@@ -1248,8 +1192,7 @@ function getGitUserRepositoryObjectKey()
     echo "${results}" | sort -f
 }
 
-function isGitUserSuspended()
-{
+function isGitUserSuspended() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1286,8 +1229,7 @@ function isGitUserSuspended()
     echo 'false' && return 1
 }
 
-function isValidGitToken()
-{
+function isValidGitToken() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1324,8 +1266,7 @@ function isValidGitToken()
     echo 'true' && return 0
 }
 
-function removeGitCollaboratorFromRepository()
-{
+function removeGitCollaboratorFromRepository() {
     local -r user="${1}"
     local -r token="${2}"
     local -r gitURL="${3}"
@@ -1342,8 +1283,7 @@ function removeGitCollaboratorFromRepository()
         --retry-delay 5
 }
 
-function removeGitMemberFromOrganization()
-{
+function removeGitMemberFromOrganization() {
     local -r user="${1}"
     local -r token="${2}"
     local gitURL="${3}"
@@ -1368,8 +1308,7 @@ function removeGitMemberFromOrganization()
         --retry-delay 5
 }
 
-function removeGitUserFromTeam()
-{
+function removeGitUserFromTeam() {
     local -r user="${1}"
     local -r token="${2}"
     local -r teamURL="${3}"
@@ -1388,8 +1327,7 @@ function removeGitUserFromTeam()
 # INSTALL UTILITIES #
 #####################
 
-function installPortableBinary()
-{
+function installPortableBinary() {
     local -r appTitleName="${1}"
     local -r downloadURL="${2}"
     local -r installFolderPath="${3}"
@@ -1455,8 +1393,7 @@ function installPortableBinary()
 # MAC UTILITIES #
 #################
 
-function closeMacApplications()
-{
+function closeMacApplications() {
     local -r headerMessage="${1}"
     local -r applicationNames=("${@:2}")
 
@@ -1488,8 +1425,7 @@ function closeMacApplications()
     done
 }
 
-function getMacCurrentUserICloudDriveFolderPath()
-{
+function getMacCurrentUserICloudDriveFolderPath() {
     local -r iCloudFolderPath="$(getCurrentUserHomeFolder)/Library/Mobile Documents/com~apple~CloudDocs"
 
     if [[ -d "${iCloudFolderPath}" ]]
@@ -1500,8 +1436,7 @@ function getMacCurrentUserICloudDriveFolderPath()
     fi
 }
 
-function openMacApplications()
-{
+function openMacApplications() {
     local -r headerMessage="${1}"
     local -r applicationNames=("${@:2}")
 
@@ -1525,8 +1460,7 @@ function openMacApplications()
 # NUMBER UTILITIES #
 ####################
 
-function checkNaturalNumber()
-{
+function checkNaturalNumber() {
     local -r string="${1}"
     local -r errorMessage="${2}"
 
@@ -1541,8 +1475,7 @@ function checkNaturalNumber()
     fi
 }
 
-function checkPositiveInteger()
-{
+function checkPositiveInteger() {
     local -r string="${1}"
     local -r errorMessage="${2}"
 
@@ -1557,8 +1490,7 @@ function checkPositiveInteger()
     fi
 }
 
-function isNaturalNumber()
-{
+function isNaturalNumber() {
     local -r string="${1}"
 
     if [[ "${string}" =~ ^[0-9]+$ ]]
@@ -1569,8 +1501,7 @@ function isNaturalNumber()
     echo 'false' && return 1
 }
 
-function isPositiveInteger()
-{
+function isPositiveInteger() {
     local -r string="${1}"
 
     if [[ "${string}" =~ ^[1-9][0-9]*$ ]]
@@ -1585,8 +1516,7 @@ function isPositiveInteger()
 # OS UTILITIES #
 ################
 
-function checkRequireLinuxSystem()
-{
+function checkRequireLinuxSystem() {
     if [[ "$(isAmazonLinuxDistributor)" = 'false' && "$(isCentOSDistributor)" = 'false' && "$(isRedHatDistributor)" = 'false' && "$(isUbuntuDistributor)" = 'false' ]]
     then
         fatal '\nFATAL : only support Amazon-Linux, CentOS, RedHat, or Ubuntu OS'
@@ -1598,8 +1528,7 @@ function checkRequireLinuxSystem()
     fi
 }
 
-function checkRequireMacSystem()
-{
+function checkRequireMacSystem() {
     if [[ "$(isMacOperatingSystem)" = 'false' ]]
     then
         fatal '\nFATAL : only support Mac OS'
@@ -1611,33 +1540,27 @@ function checkRequireMacSystem()
     fi
 }
 
-function getMachineDescription()
-{
+function getMachineDescription() {
     lsb_release -d -s
 }
 
-function getMachineRelease()
-{
+function getMachineRelease() {
     lsb_release -r -s
 }
 
-function is64BitSystem()
-{
+function is64BitSystem() {
     isMachineHardware 'x86_64'
 }
 
-function isAmazonLinuxDistributor()
-{
+function isAmazonLinuxDistributor() {
     isDistributor 'amzn'
 }
 
-function isCentOSDistributor()
-{
+function isCentOSDistributor() {
     isDistributor 'centos'
 }
 
-function isDistributor()
-{
+function isDistributor() {
     local -r distributor="${1}"
 
     local -r found="$(grep -F -i -o -s "${distributor}" '/proc/version')"
@@ -1650,13 +1573,11 @@ function isDistributor()
     echo 'true' && return 0
 }
 
-function isLinuxOperatingSystem()
-{
+function isLinuxOperatingSystem() {
     isOperatingSystem 'Linux'
 }
 
-function isMachineHardware()
-{
+function isMachineHardware() {
     local -r machineHardware="$(escapeGrepSearchPattern "${1}")"
 
     local -r found="$(uname -m | grep -E -i -o "^${machineHardware}$")"
@@ -1669,13 +1590,11 @@ function isMachineHardware()
     echo 'true' && return 0
 }
 
-function isMacOperatingSystem()
-{
+function isMacOperatingSystem() {
     isOperatingSystem 'Darwin'
 }
 
-function isOperatingSystem()
-{
+function isOperatingSystem() {
     local -r operatingSystem="$(escapeGrepSearchPattern "${1}")"
 
     local -r found="$(uname -s | grep -E -i -o "^${operatingSystem}$")"
@@ -1688,13 +1607,11 @@ function isOperatingSystem()
     echo 'true' && return 0
 }
 
-function isRedHatDistributor()
-{
+function isRedHatDistributor() {
     isDistributor 'redhat'
 }
 
-function isUbuntuDistributor()
-{
+function isUbuntuDistributor() {
     isDistributor 'ubuntu'
 }
 
@@ -1702,8 +1619,7 @@ function isUbuntuDistributor()
 # PACKAGE UTILITIES #
 #####################
 
-function getLastAptGetUpdate()
-{
+function getLastAptGetUpdate() {
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
     then
         local -r aptDate="$(stat -c %Y '/var/cache/apt')"
@@ -1713,8 +1629,7 @@ function getLastAptGetUpdate()
     fi
 }
 
-function installBuildEssential()
-{
+function installBuildEssential() {
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
     then
         installPackages 'build-essential'
@@ -1726,15 +1641,13 @@ function installBuildEssential()
     fi
 }
 
-function installBZip2Command()
-{
+function installBZip2Command() {
     local -r commandPackage=('bzip2' 'bzip2')
 
     installCommands "${commandPackage[@]}"
 }
 
-function installCleanUp()
-{
+function installCleanUp() {
     header 'CLEANING UP INSTALLATION'
 
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
@@ -1750,8 +1663,7 @@ function installCleanUp()
     fi
 }
 
-function installCommands()
-{
+function installCommands() {
     local -r commandPackageData=("${@}")
 
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
@@ -1776,15 +1688,13 @@ function installCommands()
     done
 }
 
-function installCURLCommand()
-{
+function installCURLCommand() {
     local -r commandPackage=('curl' 'curl')
 
     installCommands "${commandPackage[@]}"
 }
 
-function installPackage()
-{
+function installPackage() {
     local -r aptPackage="${1}"
     local -r rpmPackage="${2}"
 
@@ -1812,8 +1722,7 @@ function installPackage()
     fi
 }
 
-function installPackages()
-{
+function installPackages() {
     local -r packages=("${@}")
 
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
@@ -1837,15 +1746,13 @@ function installPackages()
     done
 }
 
-function installPIPCommand()
-{
+function installPIPCommand() {
     local -r commandPackage=('pip' 'python-pip')
 
     installCommands "${commandPackage[@]}"
 }
 
-function installPIPPackage()
-{
+function installPIPPackage() {
     local -r package="${1}"
 
     if [[ "$(isPIPPackageInstall "${package}")" = 'true' ]]
@@ -1857,15 +1764,13 @@ function installPIPPackage()
     fi
 }
 
-function installUnzipCommand()
-{
+function installUnzipCommand() {
     local -r commandPackage=('unzip' 'unzip')
 
     installCommands "${commandPackage[@]}"
 }
 
-function isAptGetPackageInstall()
-{
+function isAptGetPackageInstall() {
     local -r package="$(escapeGrepSearchPattern "${1}")"
 
     local -r found="$(dpkg --get-selections | grep -E -o "^${package}(:amd64)*\s+install$")"
@@ -1878,8 +1783,7 @@ function isAptGetPackageInstall()
     echo 'true' && return 0
 }
 
-function isPIPPackageInstall()
-{
+function isPIPPackageInstall() {
     local -r package="$(escapeGrepSearchPattern "${1}")"
 
     # Install PIP
@@ -1903,8 +1807,7 @@ function isPIPPackageInstall()
     echo 'true' && return 0
 }
 
-function runAptGetUpdate()
-{
+function runAptGetUpdate() {
     local updateInterval="${1}"
 
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
@@ -1929,8 +1832,7 @@ function runAptGetUpdate()
     fi
 }
 
-function runUpgrade()
-{
+function runUpgrade() {
     header 'UPGRADING SYSTEM'
 
     if [[ "$(isUbuntuDistributor)" = 'true' ]]
@@ -1958,8 +1860,7 @@ function runUpgrade()
     fi
 }
 
-function upgradePIPPackage()
-{
+function upgradePIPPackage() {
     local -r package="${1}"
 
     if [[ "$(isPIPPackageInstall "${package}")" = 'true' ]]
@@ -1975,8 +1876,7 @@ function upgradePIPPackage()
 # SERVICE UTILITIES #
 #####################
 
-function disableService()
-{
+function disableService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -1998,8 +1898,7 @@ function disableService()
     statusService "${serviceName}"
 }
 
-function enableService()
-{
+function enableService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -2019,8 +1918,7 @@ function enableService()
     statusService "${serviceName}"
 }
 
-function restartService()
-{
+function restartService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -2029,8 +1927,7 @@ function restartService()
     startService "${serviceName}"
 }
 
-function startService()
-{
+function startService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -2052,8 +1949,7 @@ function startService()
     statusService "${serviceName}"
 }
 
-function statusService()
-{
+function statusService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -2070,8 +1966,7 @@ function statusService()
     fi
 }
 
-function stopService()
-{
+function stopService() {
     local -r serviceName="${1}"
 
     checkNonEmptyString "${serviceName}" 'undefined service name'
@@ -2095,8 +1990,7 @@ function stopService()
 # STRING UTILITIES #
 ####################
 
-function checkNonEmptyString()
-{
+function checkNonEmptyString() {
     local -r string="${1}"
     local -r errorMessage="${2}"
 
@@ -2111,8 +2005,7 @@ function checkNonEmptyString()
     fi
 }
 
-function checkTrueFalseString()
-{
+function checkTrueFalseString() {
     local -r string="${1}"
     local -r errorMessage="${2}"
 
@@ -2127,8 +2020,7 @@ function checkTrueFalseString()
     fi
 }
 
-function debug()
-{
+function debug() {
     local -r message="${1}"
 
     if [[ "$(isEmptyString "${message}")" = 'false' ]]
@@ -2137,15 +2029,13 @@ function debug()
     fi
 }
 
-function deleteSpaces()
-{
+function deleteSpaces() {
     local -r content="${1}"
 
     replaceString "${content}" ' ' ''
 }
 
-function displayVersion()
-{
+function displayVersion() {
     local -r message="${1}"
     local -r applicationName="${2}"
 
@@ -2159,8 +2049,7 @@ function displayVersion()
     info "${message}"
 }
 
-function encodeURL()
-{
+function encodeURL() {
     local -r url="${1}"
 
     local i=0
@@ -2184,8 +2073,7 @@ function encodeURL()
     done
 }
 
-function error()
-{
+function error() {
     local -r message="${1}"
 
     if [[ "$(isEmptyString "${message}")" = 'false' ]]
@@ -2194,30 +2082,26 @@ function error()
     fi
 }
 
-function escapeGrepSearchPattern()
-{
+function escapeGrepSearchPattern() {
     local -r searchPattern="${1}"
 
     sed 's/[]\.|$(){}?+*^]/\\&/g' <<< "${searchPattern}"
 }
 
-function escapeSearchPattern()
-{
+function escapeSearchPattern() {
     local -r searchPattern="${1}"
 
     sed -e "s@\@@\\\\\\@@g" -e "s@\[@\\\\[@g" -e "s@\*@\\\\*@g" -e "s@\%@\\\\%@g" <<< "${searchPattern}"
 }
 
-function fatal()
-{
+function fatal() {
     local -r message="${1}"
 
     error "${message}"
     exit 1
 }
 
-function formatPath()
-{
+function formatPath() {
     local path="${1}"
 
     while [[ "$(grep -F '//' <<< "${path}")" != '' ]]
@@ -2228,8 +2112,7 @@ function formatPath()
     sed -e 's/\/$//g' <<< "${path}"
 }
 
-function header()
-{
+function header() {
     local -r title="${1}"
 
     if [[ "$(isEmptyString "${title}")" = 'false' ]]
@@ -2238,16 +2121,14 @@ function header()
     fi
 }
 
-function indentString()
-{
+function indentString() {
     local -r indentString="$(escapeSearchPattern "${1}")"
     local -r string="$(escapeSearchPattern "${2}")"
 
     sed "s@^@${indentString}@g" <<< "${string}"
 }
 
-function info()
-{
+function info() {
     local -r message="${1}"
 
     if [[ "$(isEmptyString "${message}")" = 'false' ]]
@@ -2256,8 +2137,7 @@ function info()
     fi
 }
 
-function invertTrueFalseString()
-{
+function invertTrueFalseString() {
     local -r string="${1}"
 
     checkTrueFalseString "${string}"
@@ -2270,8 +2150,7 @@ function invertTrueFalseString()
     echo 'true' && return 0
 }
 
-function isEmptyString()
-{
+function isEmptyString() {
     local -r string="${1}"
 
     if [[ "$(trimString "${string}")" = '' ]]
@@ -2282,13 +2161,11 @@ function isEmptyString()
     echo 'false' && return 1
 }
 
-function postUpMessage()
-{
+function postUpMessage() {
     echo -e "\n\033[1;32m¯\_(ツ)_/¯\033[0m"
 }
 
-function printTable()
-{
+function printTable() {
     local -r delimiter="${1}"
     local -r tableData="$(removeEmptyLines "${2}")"
     local -r colorHeader="${3}"
@@ -2361,15 +2238,13 @@ function printTable()
     fi
 }
 
-function removeEmptyLines()
-{
+function removeEmptyLines() {
     local -r content="${1}"
 
     echo -e "${content}" | sed '/^\s*$/d'
 }
 
-function repeatString()
-{
+function repeatString() {
     local -r string="${1}"
     local -r numberToRepeat="${2}"
 
@@ -2380,8 +2255,7 @@ function repeatString()
     fi
 }
 
-function replaceString()
-{
+function replaceString() {
     local -r content="${1}"
     local -r oldValue="$(escapeSearchPattern "${2}")"
     local -r newValue="$(escapeSearchPattern "${3}")"
@@ -2389,8 +2263,7 @@ function replaceString()
     sed "s@${oldValue}@${newValue}@g" <<< "${content}"
 }
 
-function stringToNumber()
-{
+function stringToNumber() {
     local -r string="${1}"
 
     checkNonEmptyString "${string}" 'undefined string'
@@ -2406,8 +2279,7 @@ function stringToNumber()
     fi
 }
 
-function stringToSearchPattern()
-{
+function stringToSearchPattern() {
     local -r string="$(trimString "${1}")"
 
     if [[ "$(isEmptyString "${string}")" = 'true' ]]
@@ -2418,15 +2290,13 @@ function stringToSearchPattern()
     fi
 }
 
-function trimString()
-{
+function trimString() {
     local -r string="${1}"
 
     sed 's,^[[:blank:]]*,,' <<< "${string}" | sed 's,[[:blank:]]*$,,'
 }
 
-function warn()
-{
+function warn() {
     local -r message="${1}"
 
     if [[ "$(isEmptyString "${message}")" = 'false' ]]
@@ -2439,8 +2309,7 @@ function warn()
 # SYSTEM UTILITIES #
 ####################
 
-function addSwapSpace()
-{
+function addSwapSpace() {
     local swapSize="${1}"
     local swapFile="${2}"
 
@@ -2484,8 +2353,7 @@ function addSwapSpace()
     free -m
 }
 
-function checkExistCommand()
-{
+function checkExistCommand() {
     local -r command="${1}"
     local -r errorMessage="${2}"
 
@@ -2500,8 +2368,7 @@ function checkExistCommand()
     fi
 }
 
-function checkRequirePorts()
-{
+function checkRequirePorts() {
     local -r ports=("${@}")
 
     installPackages 'lsof'
@@ -2533,8 +2400,7 @@ function checkRequirePorts()
     fi
 }
 
-function displayOpenPorts()
-{
+function displayOpenPorts() {
     local -r sleepTimeInSecond="${1}"
 
     installPackages 'lsof'
@@ -2549,8 +2415,7 @@ function displayOpenPorts()
     lsof -i -n -P | grep -i ' (LISTEN)$' | sort -f
 }
 
-function existCommand()
-{
+function existCommand() {
     local -r command="${1}"
 
     if [[ "$(which "${command}" 2> '/dev/null')" = '' ]]
@@ -2561,8 +2426,7 @@ function existCommand()
     echo 'true' && return 0
 }
 
-function existDisk()
-{
+function existDisk() {
     local -r disk="${1}"
 
     local -r foundDisk="$(fdisk -l "${disk}" 2> '/dev/null' | grep -E -i -o "^Disk\s+$(escapeGrepSearchPattern "${disk}"): ")"
@@ -2575,8 +2439,7 @@ function existDisk()
     echo 'false' && return 1
 }
 
-function existDiskMount()
-{
+function existDiskMount() {
     local -r disk="$(escapeGrepSearchPattern "${1}")"
     local -r mountOn="$(escapeGrepSearchPattern "${2}")"
 
@@ -2590,8 +2453,7 @@ function existDiskMount()
     echo 'true' && return 0
 }
 
-function existModule()
-{
+function existModule() {
     local -r module="${1}"
 
     checkNonEmptyString "${module}" 'undefined module'
@@ -2604,8 +2466,7 @@ function existModule()
     echo 'true' && return 0
 }
 
-function existMount()
-{
+function existMount() {
     local -r mountOn="$(escapeGrepSearchPattern "${1}")"
 
     local -r foundMount="$(df | grep -E ".*\s+${mountOn}$")"
@@ -2618,8 +2479,7 @@ function existMount()
     echo 'true' && return 0
 }
 
-function flushFirewall()
-{
+function flushFirewall() {
     header 'FLUSHING FIREWALL'
 
     iptables -P INPUT ACCEPT
@@ -2636,8 +2496,7 @@ function flushFirewall()
     saveFirewall
 }
 
-function isPortOpen()
-{
+function isPortOpen() {
     local -r port="$(escapeGrepSearchPattern "${1}")"
 
     checkNonEmptyString "${port}" 'undefined port'
@@ -2665,16 +2524,14 @@ function isPortOpen()
     echo 'true' && return 0
 }
 
-function redirectJDKTMPDir()
-{
+function redirectJDKTMPDir() {
     local -r option="_JAVA_OPTIONS='-Djava.io.tmpdir=/var/tmp'"
 
     appendToFileIfNotFound '/etc/environment' "${option}" "${option}" 'false' 'false' 'true'
     appendToFileIfNotFound '/etc/profile' "${option}" "${option}" 'false' 'false' 'true'
 }
 
-function remountTMP()
-{
+function remountTMP() {
     header 'RE-MOUNTING TMP'
 
     if [[ "$(existMount '/tmp')" = 'true' ]]
@@ -2685,8 +2542,7 @@ function remountTMP()
     fi
 }
 
-function saveFirewall()
-{
+function saveFirewall() {
     header 'SAVING FIREWALL'
 
     local ruleFile=''
@@ -2713,8 +2569,7 @@ function saveFirewall()
 # USER AND GROUP UTILITIES #
 ############################
 
-function addUser()
-{
+function addUser() {
     local -r userLogin="${1}"
     local -r groupName="${2}"
     local -r createHome="${3}"
@@ -2775,8 +2630,7 @@ function addUser()
     fi
 }
 
-function addUserAuthorizedKey()
-{
+function addUserAuthorizedKey() {
     local -r userLogin="${1}"
     local -r groupName="${2}"
     local -r sshRSA="${3}"
@@ -2784,8 +2638,7 @@ function addUserAuthorizedKey()
     configUserSSH "${userLogin}" "${groupName}" "${sshRSA}" 'authorized_keys'
 }
 
-function addUserSSHKnownHost()
-{
+function addUserSSHKnownHost() {
     local -r userLogin="${1}"
     local -r groupName="${2}"
     local -r sshRSA="${3}"
@@ -2793,16 +2646,14 @@ function addUserSSHKnownHost()
     configUserSSH "${userLogin}" "${groupName}" "${sshRSA}" 'known_hosts'
 }
 
-function addUserToSudoWithoutPassword()
-{
+function addUserToSudoWithoutPassword() {
     local -r userLogin="${1}"
 
     echo "${userLogin} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${userLogin}"
     chmod 440 "/etc/sudoers.d/${userLogin}"
 }
 
-function checkExistGroupName()
-{
+function checkExistGroupName() {
     local -r groupName="${1}"
 
     if [[ "$(existGroupName "${groupName}")" = 'false' ]]
@@ -2811,8 +2662,7 @@ function checkExistGroupName()
     fi
 }
 
-function checkExistUserLogin()
-{
+function checkExistUserLogin() {
     local -r userLogin="${1}"
 
     if [[ "$(existUserLogin "${userLogin}")" = 'false' ]]
@@ -2821,21 +2671,18 @@ function checkExistUserLogin()
     fi
 }
 
-function checkRequireNonRootUser()
-{
+function checkRequireNonRootUser() {
     if [[ "$(whoami)" = 'root' ]]
     then
         fatal '\nFATAL : non root login required'
     fi
 }
 
-function checkRequireRootUser()
-{
+function checkRequireRootUser() {
     checkRequireUserLogin 'root'
 }
 
-function checkRequireUserLogin()
-{
+function checkRequireUserLogin() {
     local -r userLogin="${1}"
 
     if [[ "$(whoami)" != "${userLogin}" ]]
@@ -2844,8 +2691,7 @@ function checkRequireUserLogin()
     fi
 }
 
-function configUserGIT()
-{
+function configUserGIT() {
     local -r userLogin="${1}"
     local -r gitUserName="${2}"
     local -r gitUserEmail="${3}"
@@ -2864,8 +2710,7 @@ function configUserGIT()
     info "$(su -l "${userLogin}" -c 'git config --list')"
 }
 
-function configUserSSH()
-{
+function configUserSSH() {
     local -r userLogin="${1}"
     local -r groupName="${2}"
     local -r sshRSA="${3}"
@@ -2892,8 +2737,7 @@ function configUserSSH()
     cat "${userHome}/.ssh/${configFileName}"
 }
 
-function deleteUser()
-{
+function deleteUser() {
     local -r userLogin="${1}"
 
     if [[ "$(existUserLogin "${userLogin}")" = 'true' ]]
@@ -2902,8 +2746,7 @@ function deleteUser()
     fi
 }
 
-function existGroupName()
-{
+function existGroupName() {
     local -r group="${1}"
 
     if [[ "$(grep -E -o "^${group}:" '/etc/group')" = '' ]]
@@ -2914,8 +2757,7 @@ function existGroupName()
     echo 'true' && return 0
 }
 
-function existUserLogin()
-{
+function existUserLogin() {
     local -r user="${1}"
 
     if ( id -u "${user}" > '/dev/null' 2>&1 )
@@ -2926,8 +2768,7 @@ function existUserLogin()
     echo 'false' && return 1
 }
 
-function generateSSHPublicKeyFromPrivateKey()
-{
+function generateSSHPublicKeyFromPrivateKey() {
     local -r userLogin="${1}"
     local groupName="${2}"
 
@@ -2959,8 +2800,7 @@ function generateSSHPublicKeyFromPrivateKey()
     cat "${userHome}/.ssh/id_rsa.pub"
 }
 
-function generateUserSSHKey()
-{
+function generateUserSSHKey() {
     local -r userLogin="${1}"
     local groupName="${2}"
 
@@ -2995,13 +2835,11 @@ function generateUserSSHKey()
     cat "${userHome}/.ssh/id_rsa.pub"
 }
 
-function getCurrentUserHomeFolder()
-{
+function getCurrentUserHomeFolder() {
     getUserHomeFolder "$(whoami)"
 }
 
-function getProfileFilePath()
-{
+function getProfileFilePath() {
     local -r user="${1}"
 
     local -r userHome="$(getUserHomeFolder "${user}")"
@@ -3020,8 +2858,7 @@ function getProfileFilePath()
     fi
 }
 
-function getUserGroupName()
-{
+function getUserGroupName() {
     local -r userLogin="${1}"
 
     checkExistUserLogin "${userLogin}"
@@ -3029,8 +2866,7 @@ function getUserGroupName()
     id -g -n "${userLogin}"
 }
 
-function getUserHomeFolder()
-{
+function getUserHomeFolder() {
     local -r user="${1}"
 
     if [[ "$(isEmptyString "${user}")" = 'false' ]]
@@ -3048,8 +2884,7 @@ function getUserHomeFolder()
     fi
 }
 
-function isUserLoginInGroupName()
-{
+function isUserLoginInGroupName() {
     local -r userLogin="${1}"
     local -r groupName="${2}"
 
