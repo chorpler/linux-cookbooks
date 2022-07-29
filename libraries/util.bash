@@ -2219,10 +2219,13 @@ function printTable() {
                 fi
             done
 
+            # printf "TABLE:\n%s\n\n" "${table}"
+
             if [[ "$(isEmptyString "${table}")" = 'false' ]]
             then
                 local output=''
                 output="$(echo -e "${table}" | column -s '#' -t | ${AWK} '/^\+/{gsub(" ", "-", $0)}1')"
+                # output="$(echo -e "${table}" | column_ansi -s '#' -t | ${AWK} '/^\+/{gsub(" ", "-", $0)}1')"
 
                 if [[ "${colorHeader}" = 'true' ]]
                 then
