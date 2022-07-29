@@ -4,6 +4,9 @@
 # ARRAY UTILITIES #
 ###################
 
+SED="/usr/local/bin/gsed"
+AWK="/usr/local/bin/gawk"
+
 function arrayToParameters() {
     local -r array=("${@}")
 
@@ -99,7 +102,7 @@ function convertISO8601ToSeconds() {
 
     if [[ "$(isMacOperatingSystem)" = 'true' ]]
     then
-        date -j -u -f '%FT%T' "$(awk -F '.' '{ print $1 }' <<< "${time}" | tr -d 'Z')" +'%s'
+        date -j -u -f '%FT%T' "$(${AWK} -F '.' '{ print $1 }' <<< "${time}" | tr -d 'Z')" +'%s'
     elif [[ "$(isAmazonLinuxDistributor)" = 'true' || "$(isCentOSDistributor)" = 'true' || "$(isRedHatDistributor)" = 'true' || "$(isUbuntuDistributor)" = 'true' ]]
     then
         date -d "${time}" +'%s'
@@ -529,7 +532,7 @@ function sortUniqueTrimFile() {
 
     checkExistFile "${filePath}"
 
-    printf '%s' "$(awk 'NF' "${filePath}" | awk '{$1=$1};1' | sort -u)" > "${filePath}"
+    printf '%s' "$(${AWK} 'NF' "${filePath}" | ${AWK} '{$1=$1};1' | sort -u)" > "${filePath}"
 }
 
 function symlinkListUsrBin() {
@@ -965,9 +968,9 @@ function getGitRepositoryNameFromCloneURL() {
 
     if [[ "$(grep -F -o '@' <<< "${cloneURL}")" != '' ]]
     then
-        awk -F '/' '{ print $2 }' <<< "${cloneURL}" | rev | cut -d '.' -f 2- | rev
+        ${AWK} -F '/' '{ print $2 }' <<< "${cloneURL}" | rev | cut -d '.' -f 2- | rev
     else
-        awk -F '/' '{ print $5 }' <<< "${cloneURL}" | rev | cut -d '.' -f 2- | rev
+        ${AWK} -F '/' '{ print $5 }' <<< "${cloneURL}" | rev | cut -d '.' -f 2- | rev
     fi
 }
 
@@ -2085,13 +2088,13 @@ function error() {
 function escapeGrepSearchPattern() {
     local -r searchPattern="${1}"
 
-    sed 's/[]\.|$(){}?+*^]/\\&/g' <<< "${searchPattern}"
+    ${SED} 's/[]\.|$(){}?+*^]/\\&/g' <<< "${searchPattern}"
 }
 
 function escapeSearchPattern() {
     local -r searchPattern="${1}"
 
-    sed -e "s@\@@\\\\\\@@g" -e "s@\[@\\\\[@g" -e "s@\*@\\\\*@g" -e "s@\%@\\\\%@g" <<< "${searchPattern}"
+    ${SED} -e "s@\@@\\\\\\@@g" -e "s@\[@\\\\[@g" -e "s@\*@\\\\*@g" -e "s@\%@\\\\%@g" <<< "${searchPattern}"
 }
 
 function fatal() {
@@ -2106,10 +2109,10 @@ function formatPath() {
 
     while [[ "$(grep -F '//' <<< "${path}")" != '' ]]
     do
-        path="$(sed -e 's/\/\/*/\//g' <<< "${path}")"
+        path="$(${SED} -e 's/\/\/*/\//g' <<< "${path}")"
     done
 
-    sed -e 's/\/$//g' <<< "${path}"
+    ${SED} -e 's/\/$//g' <<< "${path}"
 }
 
 function header() {
@@ -2125,7 +2128,7 @@ function indentString() {
     local -r indentString="$(escapeSearchPattern "${1}")"
     local -r string="$(escapeSearchPattern "${2}")"
 
-    sed "s@^@${indentString}@g" <<< "${string}"
+    ${SED} "s@^@${indentString}@g" <<< "${string}"
 }
 
 function info() {
@@ -2183,10 +2186,10 @@ function printTable() {
             for ((i = 1; i <= "${numberOfLines}"; i = i + 1))
             do
                 local line=''
-                line="$(sed "${i}q;d" <<< "${tableData}")"
+                line="$(${SED} "${i}q;d" <<< "${tableData}")"
 
                 local numberOfColumns=0
-                numberOfColumns="$(awk -F "${delimiter}" '{print NF}' <<< "${line}")"
+                numberOfColumns="$(${AWK} -F "${delimiter}" '{print NF}' <<< "${line}")"
 
                 # Add Line Delimiter
 
@@ -2219,7 +2222,7 @@ function printTable() {
             if [[ "$(isEmptyString "${table}")" = 'false' ]]
             then
                 local output=''
-                output="$(echo -e "${table}" | column -s '#' -t | awk '/^\+/{gsub(" ", "-", $0)}1')"
+                output="$(echo -e "${table}" | column -s '#' -t | ${AWK} '/^\+/{gsub(" ", "-", $0)}1')"
 
                 if [[ "${colorHeader}" = 'true' ]]
                 then
@@ -2241,7 +2244,7 @@ function printTable() {
 function removeEmptyLines() {
     local -r content="${1}"
 
-    echo -e "${content}" | sed '/^\s*$/d'
+    echo -e "${content}" | ${SED} '/^\s*$/d'
 }
 
 function repeatString() {
@@ -2260,7 +2263,7 @@ function replaceString() {
     local -r oldValue="$(escapeSearchPattern "${2}")"
     local -r newValue="$(escapeSearchPattern "${3}")"
 
-    sed "s@${oldValue}@${newValue}@g" <<< "${content}"
+    ${SED} "s@${oldValue}@${newValue}@g" <<< "${content}"
 }
 
 function stringToNumber() {
@@ -2286,14 +2289,31 @@ function stringToSearchPattern() {
     then
         echo "${string}"
     else
-        echo "^\s*$(sed -e 's/\s\+/\\s+/g' <<< "$(escapeSearchPattern "${string}")")\s*$"
+        echo "^\s*$(${SED} -e 's/\s\+/\\s+/g' <<< "$(escapeSearchPattern "${string}")")\s*$"
     fi
 }
 
 function trimString() {
     local -r string="${1}"
 
-    sed 's,^[[:blank:]]*,,' <<< "${string}" | sed 's,[[:blank:]]*$,,'
+    ${SED} 's,^[[:blank:]]*,,' <<< "${string}" | ${SED} 's,[[:blank:]]*$,,'
+}
+
+function stripAnsi() {
+    local -r string="${1}"
+    local OUTPUTSTRING
+    OUTPUTSTRING=$(${SED} -e 's/\x1b\[[0-9;]*m//g')
+    printf "%s" "${OUTPUTSTRING}"
+}
+
+function getStringLength() {
+    local string="${1}"
+    if [[ -z "${string}" ]]; then
+      string="$(< /dev/stdin)"
+    fi
+    local CHARACTERCOUNT
+    CHARACTERCOUNT=${#string}
+    echo "${CHARACTERCOUNT}"
 }
 
 function warn() {
@@ -2458,7 +2478,7 @@ function existModule() {
 
     checkNonEmptyString "${module}" 'undefined module'
 
-    if [[ "$(lsmod | awk '{ print $1 }' | grep -F -o "${module}")" = '' ]]
+    if [[ "$(lsmod | ${AWK} '{ print $1 }' | grep -F -o "${module}")" = '' ]]
     then
         echo 'false' && return 1
     fi
